@@ -1,4 +1,3 @@
-
 --[[
                                       
      Multicolor Awesome WM config 2.0 
@@ -12,7 +11,7 @@ theme                               = {}
 theme.confdir                       = os.getenv("HOME") .. "/.config/awesome/themes/multicolor"
 theme.wallpaper                     = theme.confdir .. "/wall.png"
 
-theme.font                          = "Terminus 8"
+theme.font                          = "文泉驿等宽正黑 12"
 --theme.taglist_font                =
 theme.menu_bg_normal                = "#000000"
 theme.menu_bg_focus                 = "#000000"
@@ -59,6 +58,8 @@ theme.widget_mail                   = theme.confdir .. "/icons/mail.png"
 theme.widget_batt                   = theme.confdir .. "/icons/bat.png"
 theme.widget_clock                  = theme.confdir .. "/icons/clock.png"
 theme.widget_vol                    = theme.confdir .. "/icons/spkr.png"
+theme.widget_touchpadOn				= theme.confdir .. "/icons/touchpadOn.png"
+theme.widget_touchpadOff			= theme.confdir .. "/icons/touchpadOff.png"
 
 theme.taglist_squares_sel           = theme.confdir .. "/icons/square_a.png"
 theme.taglist_squares_unsel         = theme.confdir .. "/icons/square_b.png"
