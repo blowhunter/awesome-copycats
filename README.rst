@@ -49,56 +49,17 @@ Gallery
 
 .. image:: http://dotshare.it/public/images/uploads/650.png
 
-**Powerarrow Darker** inspired by romockee_
-
-.. image:: http://dotshare.it/public/images/uploads/649.png
-
-**Steamburn** copycatted from ok100_ [porting from dwm]
-
-.. image:: http://dotshare.it/public/images/uploads/648.png
-
-**Blackburn**
-
-.. image:: http://dotshare.it/public/images/uploads/553.png
-
-**Dremora**
-
-.. image:: http://dotshare.it/public/images/uploads/652.png
-
-**Rainbow**
-
-.. image:: http://dotshare.it/public/images/uploads/606.png
-
-**Holo** requested by amouly_
-
-.. image:: http://dotshare.it/public/images/uploads/651.png
-
-**Copland** inspired by foozer_
-
-.. image:: http://dotshare.it/public/images/uploads/655.png
-
 Installation
 ============
 
 Using git you can have the full master branch: ::
 
     git clone --recursive https://github.com/copycat-killer/awesome-copycats.git
-
+    git clone --recursive https://github.com/blowhunter/awesome-copycats.git
+    ----for this copy
 then, move the contents of `awesome-copycats` to `~/.config/awesome`.
 
 Otherwise, download the latest two masters of ``awesome-copycats`` and ``lain`` (1_ and 2_), extract the first one, extract the second one into the first one, and put the contents of the first one into your Awesome directory.
-
-Usage
-=====
-
-Switch a theme this way: ::
-
-    cd ~/.config/awesome
-    cp rc.lua.theme rc.lua
-
-Alternatively, you can use `switch-theme.sh`_, which will also update to the latest commit.
-
-Then customize your ``rc.lua`` and restart Awesome (``Mod4 + ctrl + r``).
 
 Notes
 =====
