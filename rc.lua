@@ -2,11 +2,10 @@
                                       
      Multicolor Awesome WM config 2.0 
      github.com/copycat-killer        
-                            
-	 modify: blowhunter/wsyi.tk
+                                      
 --]]
 
--- {{{ 必须的库文件(Required libraries)
+-- {{{ Required libraries
 local gears     = require("gears")
 local awful     = require("awful")
 awful.rules     = require("awful.rules")
@@ -19,14 +18,10 @@ local lain      = require("lain")
 local cjson		= require("cjson")				--解析json数据，天气调用
 -- }}}
 
--- A debugging func
-n = function(n) naughty.notify{title="消息", text=tostring(n)} end
-last_bat_warning = 0
-
---[[ {{{ Error handling
+-- {{{ Error handling
 if awesome.startup_errors then
     naughty.notify({ preset = naughty.config.presets.critical,
-                     title = "额，启动时出现错误！",		--"Oops, there were errors during startup!",
+                     title = "Oops, there were errors during startup!",
                      text = awesome.startup_errors })
 end
 
@@ -37,14 +32,14 @@ do
         in_error = true
 
         naughty.notify({ preset = naughty.config.presets.critical,
-                         title = "额，出现一个错误！",		--"Oops, an error happened!",
+                         title = "Oops, an error happened!",
                          text = err })
         in_error = false
     end)
 end
--- }}}--]]
+-- }}}
 
--- {{{ 自启动应用(Autostart applications)
+-- {{{ Autostart applications
 function run_once(cmd)
   findme = cmd
   firstspace = cmd:find(" ")
@@ -54,31 +49,29 @@ function run_once(cmd)
   awful.util.spawn_with_shell("pgrep -u $USER -x " .. findme .. " > /dev/null || (" .. cmd .. ")")
 end
 
-run_once("urxvtd")
+--run_once("urxvtd")
 run_once("unclutter")
-run_once("xcompmgr")					--终端透明支持
-run_once("synclient TouchpadOff=1")		--开机设置触控板状态，默认锁定触控板(1);开启触控板(0)
+run_once("fcitx &")
+--run_once("xcompmgr &")					--终端透明支持
 run_once("xset b off")					--关闭响铃
-run_once(awful.util.getdir("config") .. "/utils/QQWry.py -u")	--更新QQ的IP位置库
 -- }}}
 
 -- {{{ 变量定义(Variable definitions)
 -- 本地化(localization)
 os.setlocale(os.getenv("LANG"))
 
--- 初始化beautiful(beautiful init)
+-- beautiful init
 beautiful.init(os.getenv("HOME") .. "/.config/awesome/themes/multicolor/theme.lua")
 
--- 默认(common)
+-- common
 modkey     = "Mod4"
 altkey     = "Mod1"
-terminal   = "xfce4-terminal" or "gnome-terminal" or "xterm"
-editor     = os.getenv("EDITOR") or "gedit" or "nano"  or "vi"
+terminal   = "xfce4-terminal" or "xterm"
+editor     = os.getenv("EDITOR") or "nano" or "vi"
 editor_cmd = terminal .. " -e " .. editor
 
--- 用户定义(user defined）
+-- user defined
 browser    = "firefox"
-browser2   = "iron"
 gui_editor = "gvim"
 graphics   = "gimp"
 mail       = terminal .. " -e mutt "
@@ -108,7 +101,7 @@ for s = 1, screen.count() do
 end
 -- }}}
 
--- {{{ 墙纸(Wallpaper)
+-- {{{ Wallpaper
 if beautiful.wallpaper then
     for s = 1, screen.count() do
         gears.wallpaper.maximized(beautiful.wallpaper, s, true)
@@ -116,13 +109,13 @@ if beautiful.wallpaper then
 end
 -- }}}
 
--- {{{ 桌面菜单 Freedesktop Menu
+-- {{{ Freedesktop Menu
 mymainmenu = awful.menu.new({ items = require("menugen").build_menu(),
-                              theme = { height = 24, width = 145 }})
+                              theme = { height = 16, width = 130 }})
 -- }}}
 
 -- {{{ Wibox
-markup     = lain.util.markup
+markup      = lain.util.markup
 
 --{{{ 文字时钟(Textclock)
 clockicon = wibox.widget.imagebox(beautiful.widget_clock)
@@ -168,7 +161,7 @@ function calendar_show(t_out, offset)					---->>定义显示日历信息  --t_ou
 	--根据实际查询年月取得日历项
 	local f = io.popen("ccal -u "..month.. " " ..year.. 
 				"|sed  \"s/\x1b\\[7m/<span color=\\'#a42d00\\' background=\\'#99ff99\\'><b>/g\" |sed \"s/\x1b\\[0m/<\\/b><\\/span>/g\"")				--如果当前月份高亮今日日期
-	local getCalendar = "<tt><span font='文泉驿等宽正黑 12'><b>"		--建议使用<<文泉驿等宽正黑>>，最好用等宽，轻微偏移。其他字体偏移严重 
+	local getCalendar = "<tt><span font='文泉驿等宽正黑 10.1'><b>"		--建议使用<<文泉驿等宽正黑>>，最好用等宽，轻微偏移。其他字体偏移严重 
 							.. f:read() .. "</b>\n<span background='#000'>"
 							.. f:read() .. "</span>\n"
 							.. f:read("*a"):gsub("\n*$","") 
@@ -203,7 +196,7 @@ calendar_attach(mytextclock)
 --{{{ 天气(Weather)		>>>定义开始(the start of define) 《中国天气(ChinaWeather)》
 ---15年6月25：更新写入文件，加快读取速度，减少网络访问。添加更新时间。以及其他优化
 local weather = { 
-	city = "白城", 			--如果无法自动获取城市信息，请手动设置需要显示城市的名称
+	city = "深圳", 			--如果无法自动获取城市信息，请手动设置需要显示城市的名称
 	timeout = 1800,						--设置更新时间 单位：秒(s)
 	data_dir = os.getenv("HOME").. "/.config/awesome/weather/data",
 	--利用依云的纯真IP脚本实现根据IP获取所在地信息。
@@ -259,7 +252,7 @@ function w_get_data(city)				-->>>定义获取天气数据函数(START)
 				end
 	
 				local cur_weather = "当前：" ..today_weather.. " " ..cur_tem.. "℃"							--格式化当前天气数据
-				local dates_weather = string.gsub(string.format("<span font='文泉驿微米黑 14' foreground='#c42d20'><b>当前城市： %s</b></span>\n%s\n<span font='文泉驿等宽正黑 13'>%14s<span color='#de5e1e'>(今天)</span>%12s  %s->%s\n%14s\t  %12s  %s->%s\n%14s\t  %12s  %s->%s\n%14s\t  %12s  %s->%s\n%14s\t  %12s  %s->%s</span>", city, update_time, date[1], date_weather[1], tem_low[1], tem_high[1], date[2], date_weather[2], tem_low[2], tem_high[2], date[3], date_weather[3], tem_low[3], tem_high[3], date[4], date_weather[4], tem_low[4], tem_high[4], date[5], date_weather[5], tem_low[5], tem_high[5]), "   ", "　")																			--格式化天气预报数据
+				local dates_weather = string.gsub(string.format("<span font='文泉驿微米黑 11' foreground='#c42d20'><b>当前城市： %s</b></span>\n%s\n<span font='文泉驿等宽正黑 10.1'><span color='#de5e1e'>%14s\t  %12s  %s->%s</span>\n%14s\t  %12s  %s->%s\n%14s\t  %12s  %s->%s\n%14s\t  %12s  %s->%s\n%14s\t  %12s  %s->%s</span>", city, update_time, date[1], date_weather[1], tem_low[1], tem_high[1], date[2], date_weather[2], tem_low[2], tem_high[2], date[3], date_weather[3], tem_low[3], tem_high[3], date[4], date_weather[4], tem_low[4], tem_high[4], date[5], date_weather[5], tem_low[5], tem_high[5]), "   ", "　")																			--格式化天气预报数据
 				if not io.open(weather.data_dir.. "/weatherData") then
 					os.execute("mkdir -p " ..weather.data_dir)
 					f = io.open(weather.data_dir.. "/weatherData", 'w')
@@ -365,7 +358,7 @@ function weather_erro(code)			-->>定义错误处理
 			position	= "top_left",
 			title 		= "天气提醒:",	
 			text 		= "获取天气信息失败，请查看网络链接！",
-			font		= "文泉驿微米黑 13",
+			font		= "文泉驿微米黑 11",
 			fg			= "#FF5510",
 			bg			= "#2F4F4F",
 			timeout 	= 10
@@ -376,7 +369,7 @@ function weather_erro(code)			-->>定义错误处理
  			position	= "top_left",
 			title 		= '天气设置提醒：',
 			text 		= "城市获取失败!!<br/>请在rc.lua中设置->城市名称(city值)！",
-			font		= "文泉驿微米黑 13",
+			font		= "文泉驿微米黑 11",
 			fg			= "#FF5510",
 			bg			= "#2F4F4F",
 			timeout 	= 10 
@@ -386,7 +379,7 @@ function weather_erro(code)			-->>定义错误处理
 	 		position	= "top_left",
 			title 		= "获取图片失败：",	
 			text 		= "获取图片失败！",
-			font		= "文泉驿微米黑 13",
+			font		= "文泉驿微米黑 11",
 			fg			= "#FF5510",
 			bg			= "#2F4F4F",
 			timeout 	= 10
@@ -403,9 +396,10 @@ w_clock:connect_signal("timeout", update_weather)
 w_clock:start()
 weather_attach(weatherwidget)							--天气预报（4天）触发
 weatherwidget:buttons(awful.util.table.join( awful.button({ }, 1, function () 
-												update_weather() 
-												w_forecast_show(0) end))) --鼠标左键点击天气更新信息
+						update_weather() 
+						w_forecast_show(0) end))) --鼠标左键点击天气更新信息
 ----天气(weather) 定义结束(END)<<<}}}
+
 
 -- / fs
 fsicon = wibox.widget.imagebox(beautiful.widget_fs)
@@ -445,105 +439,28 @@ cpuwidget = lain.widgets.cpu({
     end
 })
 
--- 核心温度(Coretemp)
+-- Coretemp
 tempicon = wibox.widget.imagebox(beautiful.widget_temp)
 tempwidget = lain.widgets.temp({
     settings = function()
-        widget:set_markup(markup("#f1af5f", coretemp_now .. "°C "), 30)
+        widget:set_markup(markup("#f1af5f", coretemp_now .. "°C "),30)
     end
 })
 
---{{{  电池(Battery)	>>>定义开始(the start of define)  
--- 微量修改 自 依云 网址：site: https://github.com/lilydjwg/myawesomerc
--- Modify from 依云 site: https://github.com/lilydjwg/myawesomerc
---baticon = wibox.widget.imagebox(beautiful.widget_batt)
-
---battery indicator, using the acpi command ---请确认已安装apci
-local battery_state = {
-    Unknown     = '<span color="#CDCDCD">↯',
-    Idle        = '<span color="#CDCDCD">↯',
-    Charging    = '<span color="green">+',
-    Discharging = '<span color="#1e69ff">–',
-}
-function update_batwidget()
-    local pipe = io.popen('acpi')
-    if not pipe then
-        batwidget:set_markup('<span color="red">ERR</span>')
-        return
-    end
-
---[[
-Battery 0: Unknown, 97%
-Battery 1: Unknown, 99%
-Battery 0: Discharging, 97%, discharging at zero rate - will never fully discharge.
-Battery 1: Unknown, 99%
-Battery 0: Discharging, 96%, 02:25:51 remaining
-Battery 1: Unknown, 99%
-]]
-    local bats = {}
-    local max_percent = 0
-    local max_percent_index = 0
-    local index = 0
-    for line in pipe:lines() do
-        index = index + 1
-        local state, percent, rest = line:match('^Battery %d+:%s+([^,]+), ([0-9.]+)%%(.*)')
-        local t
-        if rest ~= '' then
-            t = rest:match('[1-9]*%d:%d+')
+-- Battery
+baticon = wibox.widget.imagebox(beautiful.widget_batt)
+batwidget = lain.widgets.bat({
+    settings = function()
+        if bat_now.perc == "N/A" then
+            perc = "AC"
+        else
+            perc = bat_now.perc .. "% "
         end
-        if not t then t = '' end
-        percent = tonumber(percent)
-        if percent > max_percent then
-            max_percent = percent
-            max_percent_index = index
-        end
-        table.insert(bats, {state, percent, t})
+        widget:set_text(perc)
     end
-    pipe:close()
+})
 
-    if index == 0 then
-        batwidget:set_markup('<span color="red">ERR</span>')
-        return
-    end
-
-    if max_percent <= 30 then
-        if bats[max_percent_index][1] == 'Discharging' then
-            local t = os.time()
-            if t - last_bat_warning > 60 * 5 then
-                naughty.notify{
-                    preset = naughty.config.presets.critical,
-                    title = "电量警报",
-                    text = '电池电量只剩下 ' .. max_percent .. '% 了！',
-                }
-                last_bat_warning = t
-            end
-            if max_percent <= 10 and not dont_hibernate then
-                awful.util.spawn("systemctl hibernate")
-            end
-        end
-    end
-    local text = ' '
-    for i, v in ipairs(bats) do
-        local percent = v[2]
-        if percent <= 30 then
-            percent = '<span color="red">' .. percent .. '</span>'
-        end
-        text = text .. (battery_state[v[1]] or battery_state.Unknown) .. percent .. '%'
-               .. (v[3] ~= '' and (' ' .. v[3]) or '') .. '</span>'
-        if i ~= #bats then
-            text = text .. ' '
-        end
-    end
-    batwidget:set_markup(text)
-end
-batwidget = wibox.widget.textbox('↯??%')
-update_batwidget()
-bat_clock = timer({ timeout = 5 })
-bat_clock:connect_signal("timeout", update_batwidget)
-bat_clock:start()
--- 电池定义结束(the end of battery define)<<<}}}
-
--- ALSA音量控制(ALSA volume)
+-- ALSA volume
 volicon = wibox.widget.imagebox(beautiful.widget_vol)
 volumewidget = lain.widgets.alsa({
     settings = function()
@@ -555,7 +472,7 @@ volumewidget = lain.widgets.alsa({
     end
 })
 
--- 网络(Net)
+-- Net
 netdownicon = wibox.widget.imagebox(beautiful.widget_netdown)
 --netdownicon.align = "middle"
 netdowninfo = wibox.widget.textbox()
@@ -569,58 +486,12 @@ netupinfo = lain.widgets.net({
             update_weather()
         end
 
-        widget:set_markup(markup("#51a0eb", net_now.sent .. "k"), 0.5)
-        netdowninfo:set_markup(markup("#87af5f", net_now.received .. "k"), 0.5)
+        widget:set_markup(markup("#e54c62", net_now.sent .. " "), 30)
+        netdowninfo:set_markup(markup("#87af5f", net_now.received .. " "), 30)
     end
 })
---{{{ 触摸板（TouchpadToggle）>>>定义开始
-touchpadwidget = wibox.widget.imagebox()
 
-function touchpadctl(mode, widget)
-	local f = io.popen("synclient -l | grep -c 'TouchpadOff.*=.*1'")
-	local status = f:read("*n")
-	f:close()
-	
-	if mode == "update" then
-		if status == 1 then
-			widget:set_image(beautiful.widget_touchpadOff)	--请确认对应theme文件中已经添加了图片的路径和名称
-		else
-			widget:set_image(beautiful.widget_touchpadOn)
-		end
-	else
-        if status == 1 then									--如果当前触控板为关闭
-        	os.execute("synclient TouchpadOff=0") 			--执行开启触控板命令
-        	widget:set_image(beautiful.widget_touchpadOn)	--更改wibox图标
-			naughty.notify({ 								--弹出提示信息
-	 			position	= "top_left",
-				title 		= "触摸板信息:",	
-				text 		= "触摸板开启！",
-				font		= "文泉驿微米黑 13",
-				fg			= "#FF5510",
-				bg			= "#2F4F4F",
-				timeout 	= 5 })
-        else												--如果当前触控板为开启
-         	os.execute("synclient TouchpadOff=1")			--执行关闭触控板命令
-         	widget:set_image(beautiful.widget_touchpadOff)	--更改wibox图标
-			naughty.notify({ 								--弹出提示信息
-	 			position	= "top_left",
-				title 		= "触摸板信息:",
-				text 		= "触摸板关闭！",
-				font		= "文泉驿微米黑 13",
-				fg			= "#FF5510",
-				bg			= "#2F4F4F",
-				timeout 	= 5 })
-        end	
-    end	
-end	
---[[touchpad_clock = timer({ timeout = 1000 })
-touchpad_clock:connect_signal("timeout", function () touchpadctl("update", touchpadwidget) end)
-touchpad_clock:start()--]]
-
-touchpadctl("update", touchpadwidget)  
--- 触摸板(TouchpadToggle)	定义结束<<<}}}
-
--- 内存(MEM)
+-- MEM
 memicon = wibox.widget.imagebox(beautiful.widget_mem)
 memwidget = lain.widgets.mem({
     settings = function()
@@ -660,7 +531,7 @@ spacer = wibox.widget.textbox(" ")
 
 -- {{{ Layout
 
--- 为每个屏幕创建并添加消息盒子 Create a wibox for each screen and add it
+-- Create a wibox for each screen and add it
 mywibox = {}
 mybottomwibox = {}
 mypromptbox = {}
@@ -680,8 +551,8 @@ mytasklist.buttons = awful.util.table.join(
                                               if c == client.focus then
                                                   c.minimized = true
                                               else
-                                                  --没有这个，接下来的 :isvisible()没有意义
-												  --Without this, the following :isvisible() makes no sense
+                                                  -- Without this, the following
+                                                  -- :isvisible() makes no sense
                                                   c.minimized = false
                                                   if not c:isvisible() then
                                                       awful.tag.viewonly(c:tags()[1])
@@ -745,7 +616,6 @@ for s = 1, screen.count() do
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     --right_layout:add(mailicon)
     --right_layout:add(mailwidget)
-    right_layout:add(touchpadwidget)
     right_layout:add(netdownicon)
     right_layout:add(netdowninfo)
     right_layout:add(netupicon)
@@ -762,7 +632,7 @@ for s = 1, screen.count() do
     right_layout:add(fswidget)
     right_layout:add(weathericon)
     right_layout:add(weatherwidget)
---    right_layout:add(baticon)
+    right_layout:add(baticon)
     right_layout:add(batwidget)
     right_layout:add(clockicon)
     right_layout:add(mytextclock)
@@ -795,41 +665,37 @@ for s = 1, screen.count() do
 end
 -- }}}
 
--- {{{ 鼠标绑定 Mouse Bindings
+-- {{{ Mouse Bindings
 root.buttons(awful.util.table.join(
     awful.button({ }, 3, function () mymainmenu:toggle() end),
-    awful.button({ }, 4, awful.tag.viewnext),   --查看下一个标签
-    awful.button({ }, 5, awful.tag.viewprev)    --查看上一个标签
+    awful.button({ }, 4, awful.tag.viewnext),
+    awful.button({ }, 5, awful.tag.viewprev)
 ))
 -- }}}
 
--- {{{  按键绑定 Key Bindings
+-- {{{ Key bindings
 globalkeys = awful.util.table.join(
-    -- 屏幕截图 Take a screenshot
+    -- Take a screenshot
     -- https://github.com/copycat-killer/dots/blob/master/bin/screenshot
     awful.key({ altkey }, "p", function() awful.util.spawn("shutter -s") end),		--shutter开启选择截图
 	awful.key({ }, "Print", function () awful.util.spawn("scrot -e 'mv $f ~/图片/屏幕截图/ 2>/dev/null'") end),	--全屏截图，并保存到
-
-	-- 触摸板开启/关闭 TouchpadToggle
-	awful.key({ }, "XF86TouchpadToggle", function () touchpadctl("change", touchpadwidget) end),
 	
 	-- 关闭显示屏幕 Turn off screen
 	awful.key({ altkey }, "F7",function () os.execute("sleep 1 && xset dpms force off") end),
+	
+	--锁屏
+    awful.key({ modkey, "Control" }, "l", function () awful.util.spawn("xscreensaver-command -lock") end),
 
-	-- 显示器亮度控制 Monitor Brightness Control
-	awful.key({ }, "XF86MonBrightnessUp", function () os.execute("xbacklight -inc 10") end), --增加屏幕亮度 Increase the brightness
-	awful.key({ }, "XF86MonBrightnessDown", function () os.execute("xbacklight -dec 10") end), --降低屏幕亮度 Decrease the brightness
-
-    -- 切换标签 Tag browsing
+    -- Tag browsing
     awful.key({ modkey }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey }, "Escape", awful.tag.history.restore),
 
-    -- 切换非空标签 Non-empty tag browsing
+    -- Non-empty tag browsing
     awful.key({ altkey }, "Left", function () lain.util.tag_view_nonempty(-1) end),
     awful.key({ altkey }, "Right", function () lain.util.tag_view_nonempty(1) end),
 
-    -- 当前焦点窗口 Default client focus 
+    -- Default client focus
     awful.key({ altkey }, "k",
         function ()
             awful.client.focus.byidx( 1)
@@ -841,7 +707,7 @@ globalkeys = awful.util.table.join(
             if client.focus then client.focus:raise() end
         end),
 
-    -- 按方向切换焦点窗口 By direction client focus
+    -- By direction client focus
     awful.key({ modkey }, "j",
         function()
             awful.client.focus.bydirection("down")
@@ -863,17 +729,20 @@ globalkeys = awful.util.table.join(
             if client.focus then client.focus:raise() end
         end),
 
-    -- 显示菜单项 Show Menu
+    -- Show Menu
     awful.key({ modkey }, "w",
         function ()
             mymainmenu:show({ keygrabber = true })
         end),
 
-    -- 显示/隐藏 Wibox Show/Hide Wibox
+    -- Show/Hide Wibox
     awful.key({ modkey }, "b", function ()
         mywibox[mouse.screen].visible = not mywibox[mouse.screen].visible
         mybottomwibox[mouse.screen].visible = not mybottomwibox[mouse.screen].visible
     end),
+
+    -- LockScreen
+    awful.key({ modkey, "Control" }, "l", function () awful.util.spawn("xscreensaver-command -lock") end),
 
     -- Layout manipulation
     awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
@@ -898,12 +767,12 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "space",  function () awful.layout.inc(layouts, -1)  end),
     awful.key({ modkey, "Control" }, "n",      awful.client.restore),
 
-    -- 标准程序 Standard program
-    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),     --启动默认终端
-    awful.key({ modkey, "Control" }, "r",      awesome.restart),    --重启awesome
-    awful.key({ modkey, "Shift"   }, "q",      awesome.quit),       --退出awesome     （！谨慎使用）
+    -- Standard program
+    awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
+    awful.key({ modkey, "Control" }, "r",      awesome.restart),
+    awful.key({ modkey, "Shift"   }, "q",      awesome.quit),
 
-    -- 关闭终端 Dropdown terminal
+    -- Dropdown terminal
     awful.key({ modkey,	          }, "z",      function () drop(terminal) end),
 
     -- 小部件弹出设置 Widgets popups
@@ -911,25 +780,25 @@ globalkeys = awful.util.table.join(
     awful.key({ altkey,           }, "h",      function () fswidget.show(7) end),                --显示存储小部件
     awful.key({ altkey,           }, "w",      function () w_forecast_show(7) end),              --显示天气小部件
 
-    -- ALSA音频控制 ALSA volume control
+    -- ALSA volume control
     awful.key({ altkey }, "Up",
         function ()
-            awful.util.spawn("amixer -q set Master 1%+")
+            os.execute(string.format("amixer set %s 1%%+", volumewidget.channel))
             volumewidget.update()
         end),
     awful.key({ altkey }, "Down",
         function ()
-            awful.util.spawn("amixer -q set Master 1%-")
+            os.execute(string.format("amixer set %s 1%%-", volumewidget.channel))
             volumewidget.update()
         end),
     awful.key({ altkey }, "m",
-       function ()
-            awful.util.spawn("amixer -q set Master playback toggle")
+        function ()
+            os.execute(string.format("amixer set %s toggle", volumewidget.channel))
             volumewidget.update()
         end),
     awful.key({ altkey, "Control" }, "m",
         function ()
-            awful.util.spawn("amixer -q set Master playback 100%")
+            os.execute(string.format("amixer set %s 100%%", volumewidget.channel))
             volumewidget.update()
         end),
 
@@ -955,14 +824,14 @@ globalkeys = awful.util.table.join(
             mpdwidget.update()
         end),
 
-    -- 复制到剪贴板 Copy to clipboard
+    -- Copy to clipboard
     awful.key({ modkey }, "c", function () os.execute("xsel -p -o | xsel -i -b") end),
 
-    -- 用户程序 User programs
-    awful.key({ modkey }, "q", function () awful.util.spawn(browser) end), -- 启动firefox
+    -- User programs
+    awful.key({ modkey }, "q", function () awful.util.spawn(browser) end),
     awful.key({ modkey }, "i", function () awful.util.spawn(browser2) end),
-    awful.key({ modkey }, "s", function () awful.util.spawn(gui_editor) end), --启动gedit
-    awful.key({ modkey }, "g", function () awful.util.spawn(graphics) end),   --启动gimp
+    awful.key({ modkey }, "s", function () awful.util.spawn(gui_editor) end),
+    awful.key({ modkey }, "g", function () awful.util.spawn(graphics) end),
 
     -- Prompt
     awful.key({ modkey }, "r", function () mypromptbox[mouse.screen]:run() end),
@@ -976,8 +845,8 @@ globalkeys = awful.util.table.join(
 )
 
 clientkeys = awful.util.table.join(
-    awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),      --全屏当前焦点窗口
-    awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),     --关闭当前焦点窗口
+    awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
+    awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
     awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
@@ -996,10 +865,11 @@ clientkeys = awful.util.table.join(
 )
 
 -- Bind all key numbers to tags.
--- Be careful: we use keycodes to make it works on any keyboard layout.
+-- be careful: we use keycodes to make it works on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
 for i = 1, 9 do
     globalkeys = awful.util.table.join(globalkeys,
+        -- View tag only.
         awful.key({ modkey }, "#" .. i + 9,
                   function ()
                         local screen = mouse.screen
@@ -1008,6 +878,7 @@ for i = 1, 9 do
                            awful.tag.viewonly(tag)
                         end
                   end),
+        -- Toggle tag.
         awful.key({ modkey, "Control" }, "#" .. i + 9,
                   function ()
                       local screen = mouse.screen
@@ -1016,18 +887,24 @@ for i = 1, 9 do
                          awful.tag.viewtoggle(tag)
                       end
                   end),
+        -- Move client to tag.
         awful.key({ modkey, "Shift" }, "#" .. i + 9,
                   function ()
-                      local tag = awful.tag.gettags(client.focus.screen)[i]
-                      if client.focus and tag then
-                          awful.client.movetotag(tag)
+                      if client.focus then
+                          local tag = awful.tag.gettags(client.focus.screen)[i]
+                          if tag then
+                              awful.client.movetotag(tag)
+                          end
                      end
                   end),
+        -- Toggle tag.
         awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
                   function ()
-                      local tag = awful.tag.gettags(client.focus.screen)[i]
-                      if client.focus and tag then
-                          awful.client.toggletag(tag)
+                      if client.focus then
+                          local tag = awful.tag.gettags(client.focus.screen)[i]
+                          if tag then
+                              awful.client.toggletag(tag)
+                          end
                       end
                   end))
 end
@@ -1037,13 +914,13 @@ clientbuttons = awful.util.table.join(
     awful.button({ modkey }, 1, awful.mouse.client.move),
     awful.button({ modkey }, 3, awful.mouse.client.resize))
 
--- 设置按键
+-- Set keys
 root.keys(globalkeys)
 -- }}}
 
--- {{{ 规则
+-- {{{ Rules
 awful.rules.rules = {
-    -- 所有设置的端都遵循此规则.
+    -- All clients will match this rule.
     { rule = { },
       properties = { border_width = beautiful.border_width,
                      border_color = beautiful.border_normal,
@@ -1051,52 +928,39 @@ awful.rules.rules = {
                      keys = clientkeys,
                      buttons = clientbuttons,
 	                   size_hints_honor = false } },
-    { rule = { class = "xterm" },
-		properties = { opacity = 0.90 } },
+    { rule = { class = "URxvt" },
+          properties = { opacity = 0.99 } },
 
-    { rule = { class = "MPlayer" },
-        properties = { floating = true } },
-
-    { rule = { class = "Dwb" },
-        properties = { tag = tags[1][1] } },
-
-    { rule = { class = "Iron" },
-        properties = { tag = tags[1][1] } },
+    { rule = { class = "Firefox" },
+          properties = { tag = tags[1][1] } },
 
     { rule = { instance = "plugin-container" },
-        properties = { tag = tags[1][1] } },
+          properties = { tag = tags[1][1] } },
 
-	{ rule = { class = "Gimp" },
-    	properties = { tag = tags[1][4] } },
-	
-	{ rule = { class= "Firefox" },
-		properties = { tag = tags[1][1] } },
-	
-	{ rule = { class= "pidgin" },
-		properties = {tag = tags[1][7] } },
+	  { rule = { class = "Gimp" },
+     	    properties = { tag = tags[1][4] } },
 
     { rule = { class = "Gimp", role = "gimp-image-window" },
-        properties = { maximized_horizontal = true,
- 			maximized_vertical = true } },
+          properties = { maximized_horizontal = true,
+                         maximized_vertical = true } },
 }
 -- }}}
 
--- {{{ 信号
+-- {{{ Signals
 -- signal function to execute when a new client appears.
+local sloppyfocus_last = {c=nil}
 client.connect_signal("manage", function (c, startup)
-    -- enable sloppy focus
-    c:connect_signal("mouse::enter", function(c)
-        if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
+    -- Enable sloppy focus
+    client.connect_signal("mouse::enter", function(c)
+         if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
             and awful.client.focus.filter(c) then
-            client.focus = c
-        end
-    end)
-
-    if not startup and not c.size_hints.user_position
-       and not c.size_hints.program_position then
-        awful.placement.no_overlap(c)
-        awful.placement.no_offscreen(c)
-    end
+             -- Skip focusing the client if the mouse wasn't moved.
+             if c ~= sloppyfocus_last.c then
+                 client.focus = c
+                 sloppyfocus_last.c = c
+             end
+         end
+     end)
 
     local titlebars_enabled = false
     if titlebars_enabled and (c.type == "normal" or c.type == "dialog") then
